@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createMatchConfig, DEFAULT_GAME_CONFIG, type GameConfig } from '@/config/gameConfig';
 import type { ArenaLayout } from './arena';
 import { Simulation } from './simulation';
+import { damageShip } from './systems/combat';
 import { spawnEnemy } from './systems/spawner';
 import { IDLE_INTENT, type ControlIntent, type GameEvent } from './types';
 
@@ -156,6 +157,27 @@ describe('combat and scoring', () => {
     expect(enemy.alive).toBe(false);
     expect(sim.world.score).toBe(1);
     expect(sim.world.ships).toHaveLength(1);
+  });
+
+  it('shots of a destroyed enemy stop causing damage', () => {
+    const sim = new Simulation(testConfig(), 1, OPEN_SEA);
+    const { player } = sim.world;
+    spawnEnemy(sim.world, 'shooter', { x: player.pos.x + 300, y: player.pos.y });
+    const shooter = sim.world.ships[1];
+    expect(shooter).toBeDefined();
+    if (!shooter) return;
+    // Face the player and let it fire once.
+    shooter.angle = Math.PI;
+    runSteps(sim, 2);
+    expect(sim.world.projectiles.some((p) => p.ownerId === shooter.id)).toBe(true);
+
+    // Sink it while its shot is in flight: the shot is removed and never hits.
+    shooter.health = 1;
+    sim.world.player.cooldowns.front = 0;
+    damageShip(sim.world, shooter, 10, 'projectile', 'player');
+    expect(sim.world.projectiles.some((p) => p.alive && p.ownerId === shooter.id)).toBe(false);
+    runSteps(sim, seconds(1));
+    expect(player.health).toBe(DEFAULT_GAME_CONFIG.player.maxHealth);
   });
 
   it('chaser rams the player, explodes and does not score', () => {

@@ -119,6 +119,12 @@ export function destroyShip(world: World, ship: Ship, cause: DeathCause): void {
     y: ship.pos.y,
     angle: ship.angle,
   });
+  // A destroyed enemy stops causing damage: its shots still in flight fizzle out.
+  if (ship.faction === 'enemy') {
+    for (const p of world.projectiles) {
+      if (p.alive && p.ownerId === ship.id) expire(world, p, 'water');
+    }
+  }
 }
 
 /**
