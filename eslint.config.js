@@ -32,6 +32,14 @@ export default tseslint.config(
     },
   },
   {
+    // Playwright fixtures call `use()`, which is not a React hook.
+    files: ['e2e/**/*.ts'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      '@typescript-eslint/no-invalid-void-type': 'off',
+    },
+  },
+  {
     files: ['scripts/**/*.mjs'],
     extends: [js.configs.recommended],
     languageOptions: { globals: globals.node },

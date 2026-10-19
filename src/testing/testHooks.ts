@@ -37,6 +37,8 @@ declare global {
 }
 
 let current: GameSession | null = null;
+/** Final snapshot of the last session, so tests can inspect a match after it ended. */
+let lastSnapshot: ReturnType<typeof snapshot> | null = null;
 
 function snapshot(session: GameSession) {
   const w = session.sim.world;
@@ -78,7 +80,7 @@ export function installTestHooks(queryClient: QueryClient): void {
   window.__pirateBattle = {
     session: {
       active: () => current !== null,
-      state: () => (current ? snapshot(current) : null),
+      state: () => (current ? snapshot(current) : lastSnapshot),
       setManualClock: (manual) => current?.setManualClock(manual),
       advance: (ms) => current?.advanceBy(ms) ?? 0,
       spawnEnemy: (kind, x, y) => current?.debugSpawn(kind, x, y) ?? -1,
@@ -96,5 +98,7 @@ export function installTestHooks(queryClient: QueryClient): void {
 }
 
 export function registerSession(session: GameSession | null): void {
+  if (current && !session) lastSnapshot = snapshot(current);
+  if (session) lastSnapshot = null;
   current = session;
 }

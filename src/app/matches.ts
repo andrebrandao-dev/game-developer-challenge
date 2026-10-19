@@ -2,11 +2,12 @@ import { useSyncExternalStore } from 'react';
 import { z } from 'zod';
 import { matchRecordSchema, type MatchRecord } from '@/api/contracts';
 import { enqueueRecord } from '@/api/pendingRecords';
-import { createMatchConfig, type GameConfig, type PlayerOptions } from '@/config/gameConfig';
+import { createMatchConfig, DEFAULT_GAME_CONFIG, type GameConfig, type PlayerOptions } from '@/config/gameConfig';
 import { randomSeed } from '@/game/core/rng';
 import type { MatchResult } from '@/game/core/types';
 import { ValueStore } from '@/lib/store';
 import { readJson, writeJson } from '@/persistence/storage';
+import { baseConfigWithTestOverrides } from '@/testing/testConfig';
 import { optionsStore, profileStore, STORAGE_KEYS } from './preferences';
 import { runtimeFlags } from './runtimeFlags';
 
@@ -39,7 +40,7 @@ export function startMatch(): ActiveMatch {
   const match: ActiveMatch = {
     matchId: crypto.randomUUID(),
     options,
-    config: createMatchConfig(options),
+    config: createMatchConfig(options, runtimeFlags.testHooks ? baseConfigWithTestOverrides() : DEFAULT_GAME_CONFIG),
     seed: runtimeFlags.seed ?? randomSeed(),
   };
   activeMatchStore.set({ match });

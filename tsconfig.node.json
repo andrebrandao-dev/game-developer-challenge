@@ -5,10 +5,11 @@
     "lib": ["ES2023", "DOM"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    "jsx": "react-jsx",
     "noEmit": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -17,5 +18,5 @@
     "baseUrl": ".",
     "paths": { "@/*": ["src/*"] }
   },
-  "include": ["vite.config.ts", "vitest.config.ts", "playwright.config.ts", "e2e", "scripts"]
+  "include": ["src/vite-env.d.ts", "vite.config.ts", "vitest.config.ts", "playwright.config.ts", "e2e", "scripts"]
 }
