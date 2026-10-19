@@ -6,6 +6,8 @@ const PORT = 4173;
 // included). Expose those worker fetches to Playwright so tests can route them.
 process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = '1';
 const isCI = !!process.env.CI;
+/** Set to run the suite against a deployed URL instead of a local build. */
+const remoteBaseUrl = process.env.PLAYWRIGHT_BASE_URL;
 
 /**
  * E2E suite runs against the production build (vite build + preview), so it
@@ -29,7 +31,7 @@ export default defineConfig({
   },
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
   use: {
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: remoteBaseUrl ?? `http://localhost:${PORT}`,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -45,10 +47,12 @@ export default defineConfig({
       use: { ...devices['Pixel 7 landscape'] },
     },
   ],
-  webServer: {
-    command: `pnpm build && pnpm preview --port ${PORT} --strictPort`,
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: !isCI,
-    timeout: 180_000,
-  },
+  webServer: remoteBaseUrl
+    ? undefined
+    : {
+        command: `pnpm build && pnpm preview --port ${PORT} --strictPort`,
+        url: `http://localhost:${PORT}`,
+        reuseExistingServer: !isCI,
+        timeout: 180_000,
+      },
 });

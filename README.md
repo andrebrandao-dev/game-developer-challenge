@@ -7,7 +7,7 @@ REST API simulated in the browser with **MSW**, consumed through **Axios** and
 **TanStack Query**, and the game is covered by **Playwright** E2E and visual
 regression tests.
 
-- **Live demo:** _<!-- DEPLOY_URL -->to be added after the Vercel deploy_
+- **Live demo:** https://game-developer-challenge-smoky.vercel.app/
 - **Architecture & decisions:** [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Performance report:** [docs/perf/REPORT.md](docs/perf/REPORT.md)
 - **Original challenge brief:** [docs/CHALLENGE.md](docs/CHALLENGE.md)
@@ -169,6 +169,13 @@ pnpm exec playwright show-report     # HTML report (playwright-report/)
   result screen live in `e2e/__screenshots__/` (generated on macOS; run
   `pnpm test:e2e:update` to regenerate them on another platform).
 - Any unhandled console error fails the test.
+- **Against the deployed site:** set `PLAYWRIGHT_BASE_URL` to skip the local
+  build and test a published URL (fewer workers, since assets now come over
+  the network):
+
+  ```bash
+  PLAYWRIGHT_BASE_URL=https://game-developer-challenge-smoky.vercel.app pnpm test:e2e --workers=2
+  ```
 
 Coverage map:
 
