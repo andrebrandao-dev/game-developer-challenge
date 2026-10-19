@@ -52,7 +52,8 @@ export default defineConfig({
     : {
         command: `pnpm build && pnpm preview --port ${PORT} --strictPort`,
         url: `http://localhost:${PORT}`,
-        reuseExistingServer: !isCI,
+        // Always build: reusing a running preview would test a stale dist/.
+        reuseExistingServer: false,
         timeout: 180_000,
       },
 });

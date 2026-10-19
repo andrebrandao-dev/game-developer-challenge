@@ -1,18 +1,26 @@
-import { expect, test, type GameDriver } from './fixtures';
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures';
 
-/** Collects projectile ids fired by the player over `ms`, sampling every step. */
-async function collectPlayerShots(game: GameDriver, ms: number): Promise<{ ids: Set<number>; perStep: number[] }> {
-  const ids = new Set<number>();
-  const perStep: number[] = [];
-  const steps = Math.round(ms / (1000 / 60));
-  for (let i = 0; i < steps; i++) {
-    await game.advance(1000 / 60);
-    const s = await game.state();
-    const before = ids.size;
-    for (const p of s.projectiles) if (p.faction === 'player') ids.add(p.id);
-    perStep.push(ids.size - before);
-  }
-  return { ids, perStep };
+/**
+ * Advances `ms` frame by frame and collects the ids of player projectiles seen
+ * after each step. Runs in one page round-trip; the held keys are real input.
+ */
+async function collectPlayerShots(page: Page, ms: number): Promise<{ ids: Set<number>; perStep: number[] }> {
+  const { ids, perStep } = await page.evaluate((duration) => {
+    const api = window.__pirateBattle?.session;
+    if (!api) throw new Error('No active session');
+    const seen = new Set<number>();
+    const counts: number[] = [];
+    const steps = Math.round(duration / (1000 / 60));
+    for (let i = 0; i < steps; i++) {
+      api.advance(1000 / 60);
+      const before = seen.size;
+      for (const p of api.state()?.projectiles ?? []) if (p.faction === 'player') seen.add(p.id);
+      counts.push(seen.size - before);
+    }
+    return { ids: [...seen], perStep: counts };
+  }, ms);
+  return { ids: new Set(ids), perStep };
 }
 
 test.describe('Combat', () => {
@@ -20,7 +28,7 @@ test.describe('Combat', () => {
     await game.open();
     await game.startBattle();
     await page.keyboard.down('Space');
-    const { ids, perStep } = await collectPlayerShots(game, 1000);
+    const { ids, perStep } = await collectPlayerShots(page, 1000);
     await page.keyboard.up('Space');
     // Cooldown 0.45 s: shots at t = 0, 0.45, 0.9 → 3 volleys of 1 projectile.
     expect(ids.size).toBe(3);
