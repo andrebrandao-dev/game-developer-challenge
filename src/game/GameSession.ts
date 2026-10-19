@@ -1,4 +1,4 @@
-import { Application, type Ticker } from 'pixi.js';
+import { Application, UPDATE_PRIORITY, type Ticker } from 'pixi.js';
 import type { EnemyKind, GameConfig } from '@/config/gameConfig';
 import { ValueStore } from '@/lib/store';
 import type { GameTextures } from './assets/gameAssets';
@@ -64,6 +64,9 @@ export class GameSession {
   private destroyed = false;
   private endReported = false;
   private skipNextDelta = false;
+  /** performance.now() at the start of the current frame (for work-time stats). */
+  private frameStart = 0;
+  private lastFrameMs = 0;
   private manualClock: boolean;
 
   constructor(private readonly options: GameSessionOptions) {
@@ -121,6 +124,8 @@ export class GameSession {
 
     this.sounds.start();
     app.ticker.add(this.tick);
+    // Runs after Pixi's own render callback (LOW priority), closing the frame measurement.
+    app.ticker.add(this.afterRender, undefined, UPDATE_PRIORITY.UTILITY);
     app.ticker.start();
     this.input.setEnabled(true);
     this.state.set({ phase: 'running', pauseReason: null });
@@ -132,6 +137,8 @@ export class GameSession {
   // ------------------------------------------------------------------ loop
 
   private readonly tick = (ticker: Ticker): void => {
+    this.frameStart = performance.now();
+    this.lastFrameMs = ticker.deltaMS;
     const phase = this.phase;
     let dt = ticker.deltaMS / 1000;
     if (this.skipNextDelta) {
@@ -146,16 +153,21 @@ export class GameSession {
       // Let the final explosion/sinking animations play out.
       fxDt = dt;
     }
-    this.frame(fxDt, ticker.deltaMS);
+    this.frame(fxDt);
   };
 
-  private frame(fxDt: number, frameMs: number): void {
+  private readonly afterRender = (): void => {
+    if (this.phase !== 'running' || this.manualClock) return;
+    const world = this.sim.world;
+    this.frameStats.record(this.lastFrameMs, world.ships.length + world.projectiles.length, performance.now() - this.frameStart);
+  };
+
+  private frame(fxDt: number): void {
     const renderer = this.renderer;
     if (!renderer) return;
     const events = this.sim.drainEvents();
     renderer.render(events, this.manualClock ? 1 : this.sim.alpha, fxDt);
     this.afterEvents(events);
-    if (this.phase === 'running') this.frameStats.record(frameMs, this.sim.world.ships.length + this.sim.world.projectiles.length);
   }
 
   private afterEvents(events: readonly GameEvent[]): void {
@@ -192,7 +204,7 @@ export class GameSession {
     this.state.set({ phase: 'paused', pauseReason: reason });
     this.sounds.setPaused(true);
     // Render the frozen frame once, then stop the loop entirely.
-    this.frame(0, 0);
+    this.frame(0);
     this.app?.ticker.stop();
   }
 
@@ -268,7 +280,7 @@ export class GameSession {
       this.sim.step(this.input.intent());
       this.input.consumeTaps();
       // Drain per step so events are processed in order, as in real time.
-      this.frame(this.sim.fixedStep, stepMs);
+      this.frame(this.sim.fixedStep);
     }
     this.app?.render();
     return steps;
@@ -304,6 +316,7 @@ export class GameSession {
     this.app = null;
     if (app) {
       app.ticker.remove(this.tick);
+      app.ticker.remove(this.afterRender);
       app.ticker.stop();
       this.renderer?.destroy();
       // Shared atlas textures stay cached in Assets for the next match.

@@ -1,0 +1,220 @@
+{
+  "environment": {
+    "date": "2026-10-19T18:25:50.413Z",
+    "hardware": "Apple M2, 8 cores, 16 GB RAM",
+    "os": "Darwin 25.6.0 (darwin/arm64)",
+    "browser": "Chromium 156.0.8078.4 (new headless, GPU via ANGLE/Metal)",
+    "resolution": "1920×1080 CSS px, devicePixelRatio 1",
+    "build": "vite build (production), served by vite preview"
+  },
+  "match": {
+    "sessionDurationSec": 180,
+    "spawnIntervalSec": 1,
+    "seed": 2026,
+    "pilot": "scripted: sail, weave, all weapons"
+  },
+  "frames": {
+    "frames": 10735,
+    "avgFps": 60.01,
+    "avgFrameMs": 16.66,
+    "p50FrameMs": 16.7,
+    "p95FrameMs": 16.7,
+    "p99FrameMs": 16.8,
+    "maxFrameMs": 16.8,
+    "slowFrameRatio": 0,
+    "maxEntities": 16,
+    "avgEntities": 10.23,
+    "avgWorkMs": 1.04,
+    "p95WorkMs": 1.7,
+    "maxWorkMs": 4.9
+  },
+  "timeline": [
+    {
+      "t": 2,
+      "ships": 2,
+      "projectiles": 0,
+      "particles": 20,
+      "fps": 60.65,
+      "p95": 16.7
+    },
+    {
+      "t": 12,
+      "ships": 8,
+      "projectiles": 1,
+      "particles": 126,
+      "fps": 60.09,
+      "p95": 16.7
+    },
+    {
+      "t": 23,
+      "ships": 9,
+      "projectiles": 1,
+      "particles": 77,
+      "fps": 60.05,
+      "p95": 16.7
+    },
+    {
+      "t": 33,
+      "ships": 8,
+      "projectiles": 0,
+      "particles": 112,
+      "fps": 60.03,
+      "p95": 16.7
+    },
+    {
+      "t": 44,
+      "ships": 9,
+      "projectiles": 0,
+      "particles": 85,
+      "fps": 60.03,
+      "p95": 16.7
+    },
+    {
+      "t": 55,
+      "ships": 9,
+      "projectiles": 1,
+      "particles": 101,
+      "fps": 60.02,
+      "p95": 16.7
+    },
+    {
+      "t": 65,
+      "ships": 9,
+      "projectiles": 2,
+      "particles": 78,
+      "fps": 60.02,
+      "p95": 16.7
+    },
+    {
+      "t": 76,
+      "ships": 8,
+      "projectiles": 3,
+      "particles": 108,
+      "fps": 60.02,
+      "p95": 16.7
+    },
+    {
+      "t": 86,
+      "ships": 9,
+      "projectiles": 1,
+      "particles": 75,
+      "fps": 60.01,
+      "p95": 16.7
+    },
+    {
+      "t": 97,
+      "ships": 9,
+      "projectiles": 2,
+      "particles": 69,
+      "fps": 60.01,
+      "p95": 16.7
+    },
+    {
+      "t": 108,
+      "ships": 9,
+      "projectiles": 0,
+      "particles": 109,
+      "fps": 60.01,
+      "p95": 16.7
+    },
+    {
+      "t": 118,
+      "ships": 7,
+      "projectiles": 1,
+      "particles": 124,
+      "fps": 60.01,
+      "p95": 16.7
+    },
+    {
+      "t": 129,
+      "ships": 9,
+      "projectiles": 0,
+      "particles": 74,
+      "fps": 60.01,
+      "p95": 16.7
+    },
+    {
+      "t": 139,
+      "ships": 9,
+      "projectiles": 2,
+      "particles": 81,
+      "fps": 60.01,
+      "p95": 16.7
+    },
+    {
+      "t": 150,
+      "ships": 9,
+      "projectiles": 0,
+      "particles": 78,
+      "fps": 60.01,
+      "p95": 16.7
+    },
+    {
+      "t": 161,
+      "ships": 9,
+      "projectiles": 2,
+      "particles": 145,
+      "fps": 60.01,
+      "p95": 16.7
+    },
+    {
+      "t": 171,
+      "ships": 9,
+      "projectiles": 0,
+      "particles": 54,
+      "fps": 60.01,
+      "p95": 16.7
+    }
+  ],
+  "memory": {
+    "baseline": {
+      "heapMb": 7.12,
+      "domNodes": 89,
+      "listeners": 184,
+      "documents": 2,
+      "canvases": 0
+    },
+    "cycles": [
+      {
+        "cycle": 1,
+        "heapMb": 8.59,
+        "domNodes": 94,
+        "listeners": 191,
+        "documents": 2,
+        "canvases": 0
+      },
+      {
+        "cycle": 2,
+        "heapMb": 8.85,
+        "domNodes": 94,
+        "listeners": 191,
+        "documents": 2,
+        "canvases": 0
+      },
+      {
+        "cycle": 3,
+        "heapMb": 9.08,
+        "domNodes": 94,
+        "listeners": 189,
+        "documents": 2,
+        "canvases": 0
+      },
+      {
+        "cycle": 4,
+        "heapMb": 9.18,
+        "domNodes": 94,
+        "listeners": 189,
+        "documents": 2,
+        "canvases": 0
+      },
+      {
+        "cycle": 5,
+        "heapMb": 9.35,
+        "domNodes": 94,
+        "listeners": 193,
+        "documents": 2,
+        "canvases": 0
+      }
+    ]
+  }
+}

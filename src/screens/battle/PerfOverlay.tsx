@@ -10,7 +10,7 @@ export function PerfOverlay({ session }: { session: GameSession }) {
       const s = session.frameStats.summary();
       const r = session.renderStats();
       setText(
-        `${s.avgFps.toFixed(0)} fps · p95 ${s.p95FrameMs.toFixed(1)} ms · ships ${r?.ships ?? 0} · shots ${r?.projectiles ?? 0} · fx ${r?.particles ?? 0}`,
+        `${s.avgFps.toFixed(0)} fps · p95 ${s.p95FrameMs.toFixed(1)} ms · cpu ${s.avgWorkMs.toFixed(1)} ms · ships ${r?.ships ?? 0} · shots ${r?.projectiles ?? 0} · fx ${r?.particles ?? 0}`,
       );
     }, 500);
     return () => window.clearInterval(id);

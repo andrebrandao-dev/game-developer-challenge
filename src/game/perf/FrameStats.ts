@@ -13,6 +13,10 @@ export interface FrameStatsSummary {
   slowFrameRatio: number;
   maxEntities: number;
   avgEntities: number;
+  /** CPU time per frame spent in simulation + scene update + render submission. */
+  avgWorkMs: number;
+  p95WorkMs: number;
+  maxWorkMs: number;
 }
 
 /**
@@ -22,13 +26,15 @@ export interface FrameStatsSummary {
 export class FrameStats {
   private readonly times = new Float32Array(CAPACITY);
   private readonly entities = new Uint16Array(CAPACITY);
+  private readonly work = new Float32Array(CAPACITY);
   private count = 0;
 
-  record(frameMs: number, entityCount: number): void {
+  record(frameMs: number, entityCount: number, workMs: number): void {
     if (frameMs <= 0) return;
     const i = this.count % CAPACITY;
     this.times[i] = frameMs;
     this.entities[i] = Math.min(65535, entityCount);
+    this.work[i] = workMs;
     this.count++;
   }
 
@@ -39,10 +45,13 @@ export class FrameStats {
   summary(): FrameStatsSummary {
     const n = Math.min(this.count, CAPACITY);
     if (n === 0) {
-      return { frames: 0, avgFps: 0, avgFrameMs: 0, p50FrameMs: 0, p95FrameMs: 0, p99FrameMs: 0, maxFrameMs: 0, slowFrameRatio: 0, maxEntities: 0, avgEntities: 0 };
+      return { frames: 0, avgFps: 0, avgFrameMs: 0, p50FrameMs: 0, p95FrameMs: 0, p99FrameMs: 0, maxFrameMs: 0, slowFrameRatio: 0, maxEntities: 0, avgEntities: 0, avgWorkMs: 0, p95WorkMs: 0, maxWorkMs: 0 };
     }
     const sorted = Array.from(this.times.subarray(0, n)).sort((a, b) => a - b);
     const pct = (p: number) => sorted[Math.min(n - 1, Math.floor(p * n))] ?? 0;
+    const workSorted = Array.from(this.work.subarray(0, n)).sort((a, b) => a - b);
+    let workTotal = 0;
+    for (const w of workSorted) workTotal += w;
     let total = 0;
     let slow = 0;
     let maxEntities = 0;
@@ -67,6 +76,9 @@ export class FrameStats {
       slowFrameRatio: round(slow / n),
       maxEntities,
       avgEntities: round(entityTotal / n),
+      avgWorkMs: round(workTotal / n),
+      p95WorkMs: round(workSorted[Math.min(n - 1, Math.floor(0.95 * n))] ?? 0),
+      maxWorkMs: round(workSorted[n - 1] ?? 0),
     };
   }
 }
