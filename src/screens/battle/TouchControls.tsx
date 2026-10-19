@@ -40,8 +40,17 @@ export function TouchControls({ input }: { input: InputController }) {
   const handlers = (action: GameAction) => ({
     onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      e.currentTarget.setPointerCapture(e.pointerId);
       set(action, true);
+      // Capture keeps the press alive if the finger slides off the button.
+      // Best effort: some browsers reject capture for certain pointers.
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // Without capture, pointerup/pointercancel on the button still release it.
+      }
+    },
+    onPointerLeave: (e: PointerEvent<HTMLButtonElement>) => {
+      if (!e.currentTarget.hasPointerCapture(e.pointerId)) set(action, false);
     },
     onPointerUp: () => set(action, false),
     onPointerCancel: () => set(action, false),

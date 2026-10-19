@@ -38,6 +38,11 @@ type Source = 'keyboard' | 'touch';
  */
 export class InputController {
   private readonly held: Record<Source, Set<GameAction>> = { keyboard: new Set(), touch: new Set() };
+  /**
+   * Actions pressed since the last `intent()` read. A tap shorter than one
+   * frame (down + up before the simulation steps) still registers once.
+   */
+  private readonly latched = new Set<GameAction>();
   private keyboardTarget: Window | null = null;
   private enabled = false;
   private onPause: (() => void) | null = null;
@@ -76,29 +81,45 @@ export class InputController {
   reset(): void {
     this.held.keyboard.clear();
     this.held.touch.clear();
+    this.latched.clear();
   }
 
   /** Used by the on-screen touch controls. */
   setTouch(action: GameAction, pressed: boolean): void {
     if (!this.enabled) return;
-    if (pressed) this.held.touch.add(action);
-    else this.held.touch.delete(action);
+    if (pressed) {
+      this.held.touch.add(action);
+      this.latched.add(action);
+    } else {
+      this.held.touch.delete(action);
+    }
   }
 
   isHeld(action: GameAction): boolean {
     return this.held.keyboard.has(action) || this.held.touch.has(action);
   }
 
+  private active(action: GameAction): boolean {
+    return this.isHeld(action) || this.latched.has(action);
+  }
+
+  /** Current intent (held actions plus taps not yet applied). */
   intent(): ControlIntent {
-    const left = this.isHeld('turnLeft');
-    const right = this.isHeld('turnRight');
-    return {
-      forward: this.isHeld('forward'),
+    const left = this.active('turnLeft');
+    const right = this.active('turnRight');
+    const intent: ControlIntent = {
+      forward: this.active('forward'),
       turn: left === right ? 0 : left ? -1 : 1,
-      fireFront: this.isHeld('fireFront'),
-      fireLeft: this.isHeld('fireLeft'),
-      fireRight: this.isHeld('fireRight'),
+      fireFront: this.active('fireFront'),
+      fireLeft: this.active('fireLeft'),
+      fireRight: this.active('fireRight'),
     };
+    return intent;
+  }
+
+  /** Call once the intent was applied by at least one simulation step. */
+  consumeTaps(): void {
+    this.latched.clear();
   }
 
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
@@ -111,6 +132,7 @@ export class InputController {
       if (!event.repeat) this.onPause?.();
       return;
     }
+    if (!event.repeat) this.latched.add(action);
     this.held.keyboard.add(action);
   };
 

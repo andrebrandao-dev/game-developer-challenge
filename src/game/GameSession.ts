@@ -140,7 +140,7 @@ export class GameSession {
     }
     let fxDt = 0;
     if (phase === 'running' && !this.manualClock) {
-      this.sim.advance(dt, this.input.intent());
+      if (this.sim.advance(dt, this.input.intent()) > 0) this.input.consumeTaps();
       fxDt = dt;
     } else if (phase === 'ended') {
       // Let the final explosion/sinking animations play out.
@@ -266,6 +266,7 @@ export class GameSession {
     const steps = Math.round(ms / stepMs);
     for (let i = 0; i < steps && this.sim.isRunning; i++) {
       this.sim.step(this.input.intent());
+      this.input.consumeTaps();
       // Drain per step so events are processed in order, as in real time.
       this.frame(this.sim.fixedStep, stepMs);
     }
