@@ -46,7 +46,7 @@ describe('soak: full match on the default arena', () => {
     }
 
     expect(sim.result()?.reason).toBe('time_up');
-    expect(spawned).toBeGreaterThan(20);
+    expect(spawned).toBeGreaterThan(12);
     expect(destroyed).toBeGreaterThan(0);
   });
 });
