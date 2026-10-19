@@ -10,6 +10,7 @@ regression tests.
 - **Live demo:** https://game-developer-challenge-smoky.vercel.app/
 - **Architecture & decisions:** [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Performance report:** [docs/perf/REPORT.md](docs/perf/REPORT.md)
+- **Test reports:** [docs/reports/](docs/reports/README.md) (Playwright HTML report of the last full run)
 - **Original challenge brief:** [docs/CHALLENGE.md](docs/CHALLENGE.md)
 
 ## Quick start
@@ -77,6 +78,7 @@ Optional. Copy `.env.example` to `.env.local` to override.
 - **Chasers** (red) chase you and explode on impact (15 damage, no points).
 - **Shooters** (blue) close in to firing range, keep their distance and fire
   when aligned with you and in line of sight.
+- A sunk enemy stops being dangerous at once: its shots still in flight fizzle out.
 - Every enemy sunk by your cannons is worth **1 point**.
 - A match ends when the time runs out or your ship sinks. Leaving the battle
   or refreshing the page abandons it (nothing is recorded).
@@ -192,6 +194,7 @@ Coverage map:
 | Ranking/history, pagination, loading, empty, errors, timeouts | `e2e/captains-log.spec.ts` |
 | Record once, both tabs updated, pending after refresh, timeout without duplicates, late responses | `e2e/records.spec.ts` |
 | Visual baselines | `e2e/visual.spec.ts` |
+| Accessibility (axe-core, WCAG 2.1 A/AA incl. contrast) on every screen and dialog | `e2e/a11y.spec.ts` |
 
 ## Performance
 

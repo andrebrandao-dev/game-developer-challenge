@@ -102,6 +102,9 @@ frame (Pixi ticker, variable dt)
   on, so movement, attacks, damage, spawns and scoring all stop at once.
   `damageShip` also refuses to score once the player has sunk, so a shot still
   in flight during the losing step cannot count.
+- **Destroyed enemies stop causing damage.** They leave the ship list in the
+  same step (no more AI, firing or collisions), and `destroyShip` makes their
+  projectiles still in flight fizzle out.
 - **Pause** (manual: Esc/P/button; automatic: window `blur`,
   `visibilitychange`, portrait orientation on phones) disables input (which
   clears held keys), stops the Pixi ticker and renders the frozen frame once.
@@ -301,6 +304,10 @@ and an empty query cache.
   bounds, islands, weapons and cooldowns, single damage, scoring, ram rules,
   shooter behaviour, spawn interval and safety, determinism, match end. A soak
   test plays three 180 s matches and checks physical invariants every step.
+- **Accessibility**: `e2e/a11y.spec.ts` runs axe-core (WCAG 2.1 A/AA,
+  including colour contrast) on the menu, controls, options with a validation
+  error, ranking, history, network lab, battle HUD, pause dialog and result.
+  The battle also exposes its state (in progress / paused / ended) as text.
 - **E2E (Playwright)**: run against the production build on desktop and mobile
   Chromium. Instrumentation (`?testHooks=1`) can read the state and step the
   clock (`?clock=manual`), but the real input, simulation, collision and
