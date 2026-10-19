@@ -198,6 +198,9 @@ function BattleView({ match, textures, onFinished, onAbandon }: BattleViewProps)
   return (
     <main className="battle" data-testid="battle" data-phase={state.phase}>
       <h1 className="visually-hidden">Battle</h1>
+      <p className="visually-hidden" data-testid="battle-state">
+        Battle status: {PHASE_LABEL[state.phase]}
+      </p>
       <div
         ref={stageRef}
         className="battle__stage"
@@ -244,6 +247,14 @@ function BattleView({ match, textures, onFinished, onAbandon }: BattleViewProps)
     </main>
   );
 }
+
+const PHASE_LABEL: Record<string, string> = {
+  initialising: 'preparing',
+  running: 'in progress',
+  paused: 'paused',
+  ended: 'ended',
+  destroyed: 'ended',
+};
 
 const noopSubscribe = () => () => undefined;
 const INITIAL_STATE = { phase: 'initialising', pauseReason: null } as const;

@@ -823,6 +823,16 @@ kbd {
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
 }
 
+.menu-keys {
+  margin: 0;
+  max-width: 420px;
+  line-height: 1.9;
+}
+
+.menu-keys kbd {
+  font-size: 0.72rem;
+}
+
 .last-battle {
   margin: 0;
   font-size: 0.85rem;

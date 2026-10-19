@@ -3,6 +3,7 @@ import { useOutbox } from '@/api/pendingRecords';
 import { useLastResult } from '@/app/matches';
 import type { LogTab } from '@/app/router';
 import { audio } from '@/game/audio/AudioManager';
+import { KEY_BINDINGS } from '@/game/input/InputController';
 import { ControlsHelp } from '@/ui/ControlsHelp';
 import { Modal } from '@/ui/Modal';
 import { formatClock } from '@/lib/format';
@@ -51,6 +52,16 @@ export function MainMenu({ onPlay, onOptions, onLog }: MainMenuProps) {
           />
           <p className="muted" style={{ margin: 0 }}>
             Navigate the islands. Survive the battle.
+          </p>
+          <p className="hint menu-keys" data-testid="menu-controls">
+            {KEY_BINDINGS.map((b, i) => (
+              <span key={b.action}>
+                {i > 0 && ' · '}
+                <kbd>{b.labels[0]}</kbd> {b.short}
+              </span>
+            ))}
+            <br />
+            On touch screens, use the on-screen buttons (landscape).
           </p>
 
           <nav className="btn-row" aria-label="Captain's log">
